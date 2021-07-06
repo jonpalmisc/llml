@@ -8,8 +8,41 @@ mod tree;
 use crate::tree::TreeBuilder;
 use std::fs;
 
+use clap::{App, Arg};
+
 fn main() {
-    let file_content = fs::read_to_string("test.ltml").unwrap();
+    let matches = App::new("LTML")
+        .version("0.1.0")
+        .author("Jon Palmisciano <jp@jonpalmisc.com")
+        .arg(
+            Arg::new("INPUT")
+                .about("Path to the LTML file to process")
+                .required(true)
+                .index(1),
+        )
+        .arg(
+            Arg::new("debug")
+                .short('d')
+                .long("debug")
+                .about("Print debug messages and info"),
+        )
+        .arg(
+            Arg::new("help")
+                .short('h')
+                .long("help")
+                .about("Show help and usage information"),
+        )
+        .arg(
+            Arg::new("version")
+                .short('V')
+                .long("version")
+                .about("Show the program version"),
+        )
+        .get_matches();
+
+    let input_path = matches.value_of("INPUT").unwrap();
+
+    let file_content = fs::read_to_string(input_path).unwrap();
     let tree = TreeBuilder::from_file_content(&file_content);
     tree.print(0);
 }
