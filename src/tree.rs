@@ -3,13 +3,40 @@ use std::collections::HashMap;
 use crate::parser::{LlmlParser, Rule};
 use pest::iterators::Pair;
 
-pub enum TreeNode {
-    Root(Vec<TreeNode>),
-    Element {
-        name: String,
-        attributes: HashMap<String, String>,
-        children: Vec<TreeNode>,
-    },
+type NodeList = Vec<Node>;
+type AttributeMap = HashMap<String, String>;
+
+pub struct Element {
+    name: String,
+    attributes: AttributeMap,
+    children: NodeList,
+}
+
+impl Element {
+    pub fn new() -> Self {
+        Element {
+            name: "NULL".to_string(),
+            attributes: HashMap::new(),
+            children: vec![],
+        }
+    }
+
+    pub fn set_name(&mut self, name: &str) {
+        self.name = name.to_string();
+    }
+
+    pub fn set_attribute(&mut self, key: &str, value: &str) {
+        self.attributes.insert(key.to_string(), value.to_string());
+    }
+
+    pub fn add_child(&mut self, node: Node) {
+        self.children.push(node);
+    }
+}
+
+pub enum Node {
+    Root(NodeList),
+    Element(Element),
     Literal(String),
 }
 
@@ -23,28 +50,24 @@ fn format_attributes(map: &HashMap<String, String>) -> String {
     return r.trim_end().to_string();
 }
 
-impl TreeNode {
+impl Node {
     pub fn print(&self, level: usize) {
         match &self {
-            Self::Root(children) => {
-                for c in children {
-                    c.print(0);
+            Self::Root(nodes) => {
+                for n in nodes {
+                    n.print(0);
                 }
             }
-            Self::Element {
-                name,
-                children,
-                attributes,
-            } => {
+            Self::Element(el) => {
                 println!(
                     "{}Element<{}/{}{}>",
                     " ".repeat(level * 2),
-                    name,
-                    children.len(),
-                    format_attributes(attributes),
+                    el.name,
+                    el.children.len(),
+                    format_attributes(&el.attributes),
                 );
 
-                for c in children {
+                for c in &el.children {
                     c.print(level + 1);
                 }
 
@@ -57,57 +80,51 @@ impl TreeNode {
     }
 }
 
-pub struct TreeBuilder;
+pub struct Builder;
 
-impl TreeBuilder {
-    fn node_from_literal(pair: Pair<Rule>) -> TreeNode {
-        TreeNode::Literal(String::from(pair.as_str()))
+impl Builder {
+    fn node_from_literal(pair: Pair<Rule>) -> Node {
+        Node::Literal(String::from(pair.as_str()))
     }
 
-    fn node_from_pair(pair: Pair<Rule>) -> TreeNode {
-        let mut name = String::from("NULL");
-        let mut children: Vec<TreeNode> = vec![];
-        let mut attributes = HashMap::new();
+    fn node_from_pair(pair: Pair<Rule>) -> Node {
+        let mut el = Element::new();
 
         for p in pair.into_inner() {
             match p.as_rule() {
-                Rule::ElementName => name = String::from(p.as_str()),
+                Rule::ElementName => el.set_name(p.as_str()),
                 Rule::AttributeList => {
                     for i in p.into_inner() {
                         let mut a = i.into_inner();
                         let k = a.next().unwrap().as_str();
                         let v = a.next().unwrap().as_str();
 
-                        attributes.insert(k.to_string(), v.to_string());
+                        el.set_attribute(k, v);
                     }
                 }
-                Rule::Element => children.push(Self::node_from_pair(p)),
-                Rule::Literal => children.push(Self::node_from_literal(p)),
+                Rule::Element => el.add_child(Self::node_from_pair(p)),
+                Rule::Literal => el.add_child(Self::node_from_literal(p)),
                 _ => (),
             }
         }
 
-        TreeNode::Element {
-            name,
-            attributes,
-            children,
-        }
+        Node::Element(el)
     }
 
-    pub fn from_parsed_file(pair: Pair<Rule>) -> TreeNode {
+    pub fn from_parsed_file(pair: Pair<Rule>) -> Node {
         if pair.as_rule() != Rule::File {
             panic!("Expected file rule");
         }
 
-        let mut children: Vec<TreeNode> = vec![];
+        let mut children: Vec<Node> = vec![];
         for p in pair.into_inner() {
             children.push(Self::node_from_pair(p));
         }
 
-        TreeNode::Root(children)
+        Node::Root(children)
     }
 
-    pub fn from_file_content(content: &str) -> TreeNode {
+    pub fn from_file_content(content: &str) -> Node {
         let parsed_file = LlmlParser::parse_file_content(content);
         Self::from_parsed_file(parsed_file)
     }

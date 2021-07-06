@@ -5,10 +5,8 @@ extern crate pest;
 mod parser;
 mod tree;
 
-use crate::tree::TreeBuilder;
-use std::fs;
-
 use clap::{App, Arg};
+use std::fs;
 
 fn main() {
     let matches = App::new("LLML")
@@ -43,6 +41,6 @@ fn main() {
     let input_path = matches.value_of("INPUT").unwrap();
 
     let file_content = fs::read_to_string(input_path).unwrap();
-    let tree = TreeBuilder::from_file_content(&file_content);
+    let tree = tree::Builder::from_file_content(&file_content);
     tree.print(0);
 }
