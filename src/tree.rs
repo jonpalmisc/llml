@@ -1,4 +1,4 @@
-use crate::parser::Rule;
+use crate::parser::{LtmlParser, Rule};
 use pest::iterators::Pair;
 
 pub enum TreeNode {
@@ -73,5 +73,10 @@ impl TreeBuilder {
         }
 
         TreeNode::Root(children)
+    }
+
+    pub fn from_file_content(content: &str) -> TreeNode {
+        let parsed_file = LtmlParser::parse_file_content(content);
+        Self::from_parsed_file(parsed_file)
     }
 }
