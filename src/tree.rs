@@ -97,11 +97,11 @@ impl Node {
         Self::from_parsed_file(parsed_file)
     }
 
-    pub fn print(&self, level: usize) {
+    pub fn debug_print(&self, level: usize) {
         match &self {
             Self::Root(nodes) => {
                 for n in nodes {
-                    n.print(0);
+                    n.debug_print(0);
                 }
             }
             Self::Element(el) => {
@@ -114,13 +114,40 @@ impl Node {
                 );
 
                 for c in &el.children {
-                    c.print(level + 1);
+                    c.debug_print(level + 1);
                 }
 
                 println!("");
             }
             Self::Literal(s) => {
                 println!("{}Literal<{:?}>", " ".repeat(level * 2), s);
+            }
+        }
+    }
+
+    pub fn html_print(&self, level: usize) {
+        match &self {
+            Self::Root(nodes) => {
+                for n in nodes {
+                    n.html_print(0);
+                }
+            }
+            Self::Element(el) => {
+                println!(
+                    "{}<{}{}>",
+                    " ".repeat(level * 2),
+                    el.name,
+                    format_attributes(&el.attributes),
+                );
+
+                for c in &el.children {
+                    c.html_print(level + 1);
+                }
+
+                println!("{}</{}>", " ".repeat(level * 2), el.name);
+            }
+            Self::Literal(s) => {
+                println!("{}{}", " ".repeat(level * 2), s);
             }
         }
     }
