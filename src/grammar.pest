@@ -5,13 +5,14 @@ OpenBrace = _{ "{" }
 CloseBrace = _{ "}" }
 OpenBracket = _{ "[" }
 CloseBracket = _{ "]" }
+DoubleQuote = _{ "\"" }
 
 AsciiChar = _{ ASCII_ALPHANUMERIC }
 Literal = { AsciiChar+ }
 
 AttributeKey = { AsciiChar+ }
-AttributeValue = { AsciiChar+ }
-Attribute = ${ AttributeKey ~ "=" ~ AttributeValue }
+AttributeValue = { (!DoubleQuote ~ ANY)* }
+Attribute = ${ AttributeKey ~ "=" ~ DoubleQuote ~ AttributeValue ~ DoubleQuote }
 AttributeList = { OpenBracket ~ Attribute+ ~ CloseBracket }
 
 ElementName = { AsciiChar+ }

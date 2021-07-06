@@ -1,3 +1,4 @@
 \h1{Basic example}
 
-\p{This is a basic example of \strong{LLML}}
+\p{This is a basic example of
+ \a[href="https://github.com/jonpalmisc/llml"]{LLML}}
