@@ -1,10 +1,10 @@
 \h1{A nice heading}
 
-\p{The \em{very first} paragraph in LTML}
+\p[id=first class=center]{The \em{very first} paragraph in LTML}
 
 \ul{
   \li{First item}
-  \li{Second item}
+  \li[class=hidden]{Second item}
   \li{Third item}
   \li{fourth item}
 }

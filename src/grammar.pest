@@ -3,15 +3,23 @@ WHITESPACE = _{ " " | "\t" | NEWLINE }
 Backslash = _{ "\\" }
 OpenBrace = _{ "{" }
 CloseBrace = _{ "}" }
+OpenBracket = _{ "[" }
+CloseBracket = _{ "]" }
 
 AsciiChar = _{ ASCII_ALPHANUMERIC }
 Literal = { AsciiChar+ }
+
+AttributeKey = { AsciiChar+ }
+AttributeValue = { AsciiChar+ }
+Attribute = ${ AttributeKey ~ "=" ~ AttributeValue }
+AttributeList = { OpenBracket ~ Attribute+ ~ CloseBracket }
 
 ElementName = { AsciiChar+ }
 ElementContent = _{ (Literal | Element)+ }
 Element = {
   Backslash ~
   ElementName ~
+  AttributeList? ~
   OpenBrace ~
   ElementContent ~
   CloseBrace
