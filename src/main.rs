@@ -22,6 +22,7 @@ fn main() {
             Arg::new("debug")
                 .short('d')
                 .long("debug")
+                .takes_value(false)
                 .about("Print debug messages and info"),
         )
         .arg(
@@ -43,5 +44,9 @@ fn main() {
     let file_content = fs::read_to_string(input_path).unwrap();
     let tree = tree::Node::from_file_content(&file_content);
 
-    tree.html_print(0);
+    if matches.is_present("debug") {
+        tree.debug_print(0);
+    } else {
+        tree.html_print(0);
+    }
 }
