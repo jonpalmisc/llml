@@ -1,0 +1,20 @@
+WHITESPACE = _{ " " | "\t" | NEWLINE }
+
+Backslash = _{ "\\" }
+OpenBrace = _{ "{" }
+CloseBrace = _{ "}" }
+
+AsciiChar = _{ ASCII_ALPHANUMERIC }
+Literal = { AsciiChar+ }
+
+ElementName = { AsciiChar+ }
+ElementContent = _{ (Literal | Element)+ }
+Element = {
+  Backslash ~
+  ElementName ~
+  OpenBrace ~
+  ElementContent ~
+  CloseBrace
+}
+
+File = { SOI ~ Element+ ~ EOI }

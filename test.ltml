@@ -1,0 +1,10 @@
+\h1{A nice heading}
+
+\p{The \em{very first} paragraph in LTML}
+
+\ul{
+  \li{First item}
+  \li{Second item}
+  \li{Third item}
+  \li{fourth item}
+}
