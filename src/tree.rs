@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::parser::{LtmlParser, Rule};
+use crate::parser::{LlmlParser, Rule};
 use pest::iterators::Pair;
 
 pub enum TreeNode {
@@ -108,7 +108,7 @@ impl TreeBuilder {
     }
 
     pub fn from_file_content(content: &str) -> TreeNode {
-        let parsed_file = LtmlParser::parse_file_content(content);
+        let parsed_file = LlmlParser::parse_file_content(content);
         Self::from_parsed_file(parsed_file)
     }
 }

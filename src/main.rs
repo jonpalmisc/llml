@@ -11,12 +11,12 @@ use std::fs;
 use clap::{App, Arg};
 
 fn main() {
-    let matches = App::new("LTML")
+    let matches = App::new("LLML")
         .version("0.1.0")
         .author("Jon Palmisciano <jp@jonpalmisc.com")
         .arg(
             Arg::new("INPUT")
-                .about("Path to the LTML file to process")
+                .about("Path to the LLML file to process")
                 .required(true)
                 .index(1),
         )
