@@ -41,6 +41,6 @@ fn main() {
     let input_path = matches.value_of("INPUT").unwrap();
 
     let file_content = fs::read_to_string(input_path).unwrap();
-    let tree = tree::Builder::from_file_content(&file_content);
+    let tree = tree::Node::from_file_content(&file_content);
     tree.print(0);
 }

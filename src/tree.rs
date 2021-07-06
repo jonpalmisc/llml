@@ -51,6 +51,52 @@ fn format_attributes(map: &HashMap<String, String>) -> String {
 }
 
 impl Node {
+    fn from_literal(pair: Pair<Rule>) -> Self {
+        Node::Literal(String::from(pair.as_str()))
+    }
+
+    fn from_pair(pair: Pair<Rule>) -> Self {
+        let mut el = Element::new();
+
+        for p in pair.into_inner() {
+            match p.as_rule() {
+                Rule::ElementName => el.set_name(p.as_str()),
+                Rule::AttributeList => {
+                    for i in p.into_inner() {
+                        let mut a = i.into_inner();
+                        let k = a.next().unwrap().as_str();
+                        let v = a.next().unwrap().as_str();
+
+                        el.set_attribute(k, v);
+                    }
+                }
+                Rule::Element => el.add_child(Self::from_pair(p)),
+                Rule::Literal => el.add_child(Self::from_literal(p)),
+                _ => (),
+            }
+        }
+
+        Node::Element(el)
+    }
+
+    pub fn from_parsed_file(pair: Pair<Rule>) -> Self {
+        if pair.as_rule() != Rule::File {
+            panic!("Expected file rule");
+        }
+
+        let mut children: Vec<Node> = vec![];
+        for p in pair.into_inner() {
+            children.push(Self::from_pair(p));
+        }
+
+        Node::Root(children)
+    }
+
+    pub fn from_file_content(content: &str) -> Self {
+        let parsed_file = LlmlParser::parse_file_content(content);
+        Self::from_parsed_file(parsed_file)
+    }
+
     pub fn print(&self, level: usize) {
         match &self {
             Self::Root(nodes) => {
@@ -77,55 +123,5 @@ impl Node {
                 println!("{}Literal<{:?}>", " ".repeat(level * 2), s);
             }
         }
-    }
-}
-
-pub struct Builder;
-
-impl Builder {
-    fn node_from_literal(pair: Pair<Rule>) -> Node {
-        Node::Literal(String::from(pair.as_str()))
-    }
-
-    fn node_from_pair(pair: Pair<Rule>) -> Node {
-        let mut el = Element::new();
-
-        for p in pair.into_inner() {
-            match p.as_rule() {
-                Rule::ElementName => el.set_name(p.as_str()),
-                Rule::AttributeList => {
-                    for i in p.into_inner() {
-                        let mut a = i.into_inner();
-                        let k = a.next().unwrap().as_str();
-                        let v = a.next().unwrap().as_str();
-
-                        el.set_attribute(k, v);
-                    }
-                }
-                Rule::Element => el.add_child(Self::node_from_pair(p)),
-                Rule::Literal => el.add_child(Self::node_from_literal(p)),
-                _ => (),
-            }
-        }
-
-        Node::Element(el)
-    }
-
-    pub fn from_parsed_file(pair: Pair<Rule>) -> Node {
-        if pair.as_rule() != Rule::File {
-            panic!("Expected file rule");
-        }
-
-        let mut children: Vec<Node> = vec![];
-        for p in pair.into_inner() {
-            children.push(Self::node_from_pair(p));
-        }
-
-        Node::Root(children)
-    }
-
-    pub fn from_file_content(content: &str) -> Node {
-        let parsed_file = LlmlParser::parse_file_content(content);
-        Self::from_parsed_file(parsed_file)
     }
 }
