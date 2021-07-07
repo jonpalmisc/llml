@@ -1,6 +1,6 @@
-\h1{Welcome to LLML!}
+\h1.title{Welcome to LLML!}
 
-\p{
+\p.main-paragraph{
   This is a basic example showcasing some of
   \a[href="https://github.com/jonpalmisc/llml"]{LLML}'s "features".
 }

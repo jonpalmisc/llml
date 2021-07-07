@@ -22,10 +22,12 @@ Attribute = ${ AttributeKey ~ "=" ~ DoubleQuote ~ AttributeValue ~ DoubleQuote }
 AttributeList = { OpenBracket ~ Attribute+ ~ CloseBracket }
 
 ElementName = { Alphanumeric+ }
+ElementClass = @{ "." ~ (Alphanumeric | "-" | "_")+ }
 ElementContent = _{ (Literal | Element)+ }
 Element = {
   Backslash ~
   ElementName ~
+  ElementClass? ~
   AttributeList? ~
   OpenBrace ~
   ElementContent ~

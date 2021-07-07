@@ -61,6 +61,10 @@ impl Node {
         for p in pair.into_inner() {
             match p.as_rule() {
                 Rule::ElementName => el.set_name(p.as_str()),
+                Rule::ElementClass => {
+                    let class_name = p.as_str().replace(".", "");
+                    el.set_attribute("class", &class_name);
+                }
                 Rule::AttributeList => {
                     for i in p.into_inner() {
                         let mut a = i.into_inner();
