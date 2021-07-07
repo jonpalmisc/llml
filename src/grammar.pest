@@ -1,4 +1,4 @@
-WHITESPACE = _{ " " | "\t" | NEWLINE }
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 
 Backslash = _{ "\\" }
 OpenBrace = _{ "{" }
@@ -7,15 +7,21 @@ OpenBracket = _{ "[" }
 CloseBracket = _{ "]" }
 DoubleQuote = _{ "\"" }
 
-AsciiChar = _{ ASCII_ALPHANUMERIC }
-Literal = { AsciiChar+ }
+SpecialChar = _{(
+  Backslash |
+  OpenBrace |
+  CloseBrace
+)}
 
-AttributeKey = { AsciiChar+ }
+Alphanumeric = _{ ASCII_ALPHANUMERIC }
+Literal = @{ (!SpecialChar ~ ANY)+ }
+
+AttributeKey = { Alphanumeric+ }
 AttributeValue = { (!DoubleQuote ~ ANY)* }
 Attribute = ${ AttributeKey ~ "=" ~ DoubleQuote ~ AttributeValue ~ DoubleQuote }
 AttributeList = { OpenBracket ~ Attribute+ ~ CloseBracket }
 
-ElementName = { AsciiChar+ }
+ElementName = { Alphanumeric+ }
 ElementContent = _{ (Literal | Element)+ }
 Element = {
   Backslash ~

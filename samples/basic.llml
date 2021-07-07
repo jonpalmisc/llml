@@ -1,4 +1,6 @@
-\h1{Basic example}
+\h1{Welcome to LLML!}
 
-\p{This is a basic example of
- \a[href="https://github.com/jonpalmisc/llml"]{LLML}}
+\p{
+  This is a basic example showcasing some of
+  \a[href="https://github.com/jonpalmisc/llml"]{LLML}'s "features".
+}
