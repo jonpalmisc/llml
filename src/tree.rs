@@ -25,6 +25,19 @@ impl Element {
         self.name = name.to_string();
     }
 
+    pub fn add_class(&mut self, class: &str) {
+        let class_key = "class".to_string();
+        match self.attributes.get(&class_key) {
+            Some(cl) => {
+                let new_cl = format!("{} {}", cl, class);
+                self.attributes.insert(class_key, new_cl);
+            }
+            None => {
+                self.attributes.insert(class_key, class.to_string());
+            }
+        }
+    }
+
     pub fn set_attribute(&mut self, key: &str, value: &str) {
         self.attributes.insert(key.to_string(), value.to_string());
     }
@@ -63,7 +76,7 @@ impl Node {
                 Rule::ElementName => el.set_name(p.as_str()),
                 Rule::ElementClass => {
                     let class_name = p.as_str().replace(".", "");
-                    el.set_attribute("class", &class_name);
+                    el.add_class(&class_name);
                 }
                 Rule::AttributeList => {
                     for i in p.into_inner() {

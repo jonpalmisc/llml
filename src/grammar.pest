@@ -27,7 +27,7 @@ ElementContent = _{ (Literal | Element)+ }
 Element = {
   Backslash ~
   ElementName ~
-  ElementClass? ~
+  ElementClass* ~
   AttributeList? ~
   OpenBrace ~
   ElementContent ~
