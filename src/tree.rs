@@ -133,21 +133,16 @@ impl Node {
                 }
             }
             Self::Element(el) => {
-                println!(
-                    "{}<{}{}>",
-                    " ".repeat(level * 2),
-                    el.name,
-                    format_attributes(&el.attributes),
-                );
+                print!("<{}{}>", el.name, format_attributes(&el.attributes),);
 
                 for c in &el.children {
                     c.html_print(level + 1);
                 }
 
-                println!("{}</{}>", " ".repeat(level * 2), el.name);
+                print!("</{}>", el.name);
             }
             Self::Literal(s) => {
-                println!("{}{}", " ".repeat(level * 2), s);
+                print!("{}", s);
             }
         }
     }
