@@ -46,7 +46,7 @@ fn main() {
 
     if matches.is_present("debug") {
         tree.debug_print(0);
-    } else {
-        tree.html_print(0);
     }
+
+    println!("{}", tree.to_html());
 }

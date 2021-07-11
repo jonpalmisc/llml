@@ -156,25 +156,33 @@ impl Node {
     }
 
     /// Print a tree of nodes in HTML format.
-    pub fn html_print(&self, level: usize) {
+    pub fn to_html(&self) -> String {
+        let mut result = String::new();
+
         match &self {
             Self::Root(nodes) => {
                 for n in nodes {
-                    n.html_print(0);
+                    result.push_str(&n.to_html());
                 }
             }
             Self::Element(el) => {
-                print!("<{}{}>", el.name, format_attributes(&el.attributes),);
+                result.push_str(&format!(
+                    "<{}{}>",
+                    el.name,
+                    format_attributes(&el.attributes)
+                ));
 
                 for c in &el.children {
-                    c.html_print(level + 1);
+                    result.push_str(&c.to_html());
                 }
 
-                print!("</{}>", el.name);
+                result.push_str(&format!("</{}>", el.name));
             }
             Self::Literal(s) => {
-                print!("{}", s);
+                result = format!("{}", s);
             }
         }
+
+        return result;
     }
 }
