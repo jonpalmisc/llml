@@ -44,9 +44,5 @@ fn main() {
     let file_content = fs::read_to_string(input_path).unwrap();
     let tree = tree::Node::from_file_content(&file_content);
 
-    if matches.is_present("debug") {
-        tree.debug_print(0);
-    }
-
-    println!("{}", tree.to_html());
+    tree.print(0);
 }

@@ -127,11 +127,11 @@ impl Node {
     }
 
     /// Print a tree of nodes in debug format.
-    pub fn debug_print(&self, level: usize) {
+    pub fn print(&self, level: usize) {
         match &self {
             Self::Root(nodes) => {
                 for n in nodes {
-                    n.debug_print(0);
+                    n.print(0);
                 }
             }
             Self::Element(el) => {
@@ -144,7 +144,7 @@ impl Node {
                 );
 
                 for c in &el.children {
-                    c.debug_print(level + 1);
+                    c.print(level + 1);
                 }
 
                 println!("");
@@ -153,36 +153,5 @@ impl Node {
                 println!("{}Literal<{:?}>", " ".repeat(level * 2), s);
             }
         }
-    }
-
-    /// Print a tree of nodes in HTML format.
-    pub fn to_html(&self) -> String {
-        let mut result = String::new();
-
-        match &self {
-            Self::Root(nodes) => {
-                for n in nodes {
-                    result.push_str(&n.to_html());
-                }
-            }
-            Self::Element(el) => {
-                result.push_str(&format!(
-                    "<{}{}>",
-                    el.name,
-                    format_attributes(&el.attributes)
-                ));
-
-                for c in &el.children {
-                    result.push_str(&c.to_html());
-                }
-
-                result.push_str(&format!("</{}>", el.name));
-            }
-            Self::Literal(s) => {
-                result = format!("{}", s);
-            }
-        }
-
-        return result;
     }
 }
