@@ -1,3 +1,5 @@
+use core::fmt::{self, Write};
+
 use crate::parser::{LlmlParser, Rule};
 use pest::iterators::Pair;
 
@@ -89,31 +91,38 @@ impl Node {
         let parsed_file = LlmlParser::parse_file_content(content);
         Self::from_parsed_file(parsed_file)
     }
+}
 
-    /// Print a tree of nodes in debug format.
-    pub fn print(&self, level: usize) {
-        match &self {
-            Self::Root(nodes) => {
-                for n in nodes {
-                    n.print(0);
-                }
-            }
-            Self::Element(n, c) => {
-                println!("{}Element<{}>", " ".repeat(level * 2), n);
+/// Pretty-print a vector of AST nodes.
+fn write_nodes(f: &mut fmt::Formatter, nodes: &Vec<Node>) -> fmt::Result {
+    use indenter::indented;
+    let mut df = indented(f).with_str("  ");
 
-                for d in c {
-                    d.print(level + 1);
-                }
+    for c in nodes {
+        writeln!(df, "{}", c)?;
+    }
 
-                println!("");
+    Ok(())
+}
+
+impl fmt::Display for Node {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use self::Node::*;
+
+        match self {
+            Null => write!(f, "Null<>"),
+            Literal(s) => write!(f, "Literal[{:?}],", s),
+            Attribute(k, v) => write!(f, "Attribute[{}={:?}],", k, v),
+            Element(n, c) => {
+                writeln!(f, "Element[{}] {{", n)?;
+                write_nodes(f, c)?;
+                write!(f, "}},")
             }
-            Self::Attribute(k, v) => {
-                println!("{}Attribute<{}={:?}>", " ".repeat(level * 2), k, v);
+            Root(r) => {
+                writeln!(f, "Root {{")?;
+                write_nodes(f, r)?;
+                write!(f, "}}")
             }
-            Self::Literal(s) => {
-                println!("{}Literal<{:?}>", " ".repeat(level * 2), s);
-            }
-            Self::Null => println!("{}Null<>", " ".repeat(level * 2)),
         }
     }
 }

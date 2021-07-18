@@ -44,5 +44,5 @@ fn main() {
     let file_content = fs::read_to_string(input_path).unwrap();
     let tree = tree::Node::from_file_content(&file_content);
 
-    tree.print(0);
+    println!("{}", tree);
 }
