@@ -1,6 +1,3 @@
-\h1.title.center{Welcome to LLML!}
+\h1.bold.center[id="title"]{Welcome to LLML!}
 
-\p.main-paragraph{
-  This is a basic example showcasing some of
-  \a[href="https://github.com/jonpalmisc/llml"]{LLML}'s "features".
-}
+\p[id="first"]{This is a \em{very} basic example showcasing LLML's syntax.}
