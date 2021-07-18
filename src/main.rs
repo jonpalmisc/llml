@@ -5,38 +5,23 @@ extern crate pest;
 mod parser;
 mod tree;
 
-use clap::{App, Arg};
+use clap::{App, AppSettings, Arg};
 use std::{fs, time};
 
 fn main() {
     let matches = App::new("LLML")
+        .setting(AppSettings::ArgRequiredElseHelp)
+        .setting(AppSettings::UnifiedHelpMessage)
         .version("0.1.0")
         .author("Jon Palmisciano <jp@jonpalmisc.com")
         .arg(
-            Arg::new("INPUT")
-                .about("Path to the LLML file to process")
+            Arg::with_name("INPUT")
+                .help("Path to the LLML file to process")
                 .required(true)
                 .index(1),
         )
-        .arg(
-            Arg::new("debug")
-                .short('d')
-                .long("debug")
-                .takes_value(false)
-                .about("Print debug messages and info"),
-        )
-        .arg(
-            Arg::new("help")
-                .short('h')
-                .long("help")
-                .about("Show help and usage information"),
-        )
-        .arg(
-            Arg::new("version")
-                .short('V')
-                .long("version")
-                .about("Show the program version"),
-        )
+        .help_message("Show this help information")
+        .version_message("Print the program version")
         .get_matches();
 
     let input_path = matches.value_of("INPUT").unwrap();
