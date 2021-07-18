@@ -98,8 +98,8 @@ fn write_nodes(f: &mut fmt::Formatter, nodes: &Vec<Node>) -> fmt::Result {
     use indenter::indented;
     let mut df = indented(f).with_str("  ");
 
-    for c in nodes {
-        writeln!(df, "{}", c)?;
+    for (i, c) in nodes.iter().enumerate() {
+        writeln!(df, "{}.{}", i, c)?;
     }
 
     Ok(())
