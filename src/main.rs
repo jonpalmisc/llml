@@ -2,8 +2,8 @@
 extern crate pest_derive;
 extern crate pest;
 
+mod ast;
 mod parser;
-mod tree;
 
 use clap::{App, AppSettings, Arg};
 use std::{fs, process, time};
@@ -44,7 +44,7 @@ fn run() -> Result<(), String> {
         .map_err(|_| String::from("Failed to read file at the path provided"))?;
 
     let parse_start = time::Instant::now();
-    let tree = tree::Node::from_file_content(&file_content)?;
+    let tree = ast::Node::from_file_content(&file_content)?;
     let parse_span = parse_start.elapsed();
 
     // Print the AST if requested.
