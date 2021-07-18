@@ -20,6 +20,18 @@ fn main() -> Result<(), String> {
                 .required(true)
                 .index(1),
         )
+        .arg(
+            Arg::with_name("tree")
+                .short("T")
+                .long("tree")
+                .help("Print the syntax tree after parsing")
+        )
+        .arg(
+            Arg::with_name("profile")
+                .short("P")
+                .long("profile")
+                .help("Display performance info upon exit"),
+        )
         .help_message("Show this help information")
         .version_message("Print the program version")
         .get_matches();
@@ -35,8 +47,15 @@ fn main() -> Result<(), String> {
     let tree = tree::Node::from_file_content(&file_content);
     let parse_span = parse_start.elapsed();
 
-    println!("{}\n", tree);
-    println!(" * Input parsed to AST in {:?}\n", parse_span);
+    // Print the AST if requested.
+    if matches.is_present("tree") {
+        println!("{}", tree);
+    }
+
+    // Print performance info if requested.
+    if matches.is_present("profile") {
+        println!("\n * Input parsed to AST in {:?}", parse_span);
+    }
 
     Ok(())
 }
