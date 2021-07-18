@@ -6,9 +6,9 @@ mod parser;
 mod tree;
 
 use clap::{App, AppSettings, Arg};
-use std::{fs, time};
+use std::{fs, process, time};
 
-fn main() -> Result<(), String> {
+fn run() -> Result<(), String> {
     let matches = App::new("LLML")
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::UnifiedHelpMessage)
@@ -24,7 +24,7 @@ fn main() -> Result<(), String> {
             Arg::with_name("tree")
                 .short("T")
                 .long("tree")
-                .help("Print the syntax tree after parsing")
+                .help("Print the syntax tree after parsing"),
         )
         .arg(
             Arg::with_name("profile")
@@ -44,7 +44,7 @@ fn main() -> Result<(), String> {
         .map_err(|_| String::from("Failed to read file at the path provided"))?;
 
     let parse_start = time::Instant::now();
-    let tree = tree::Node::from_file_content(&file_content);
+    let tree = tree::Node::from_file_content(&file_content)?;
     let parse_span = parse_start.elapsed();
 
     // Print the AST if requested.
@@ -58,4 +58,11 @@ fn main() -> Result<(), String> {
     }
 
     Ok(())
+}
+
+fn main() {
+    if let Err(e) = run() {
+        println!("Error: {}", e);
+        process::exit(1);
+    }
 }
