@@ -8,7 +8,7 @@ mod tree;
 use clap::{App, AppSettings, Arg};
 use std::{fs, time};
 
-fn main() {
+fn main() -> Result<(), String> {
     let matches = App::new("LLML")
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::UnifiedHelpMessage)
@@ -24,9 +24,12 @@ fn main() {
         .version_message("Print the program version")
         .get_matches();
 
+    // This unwrap() should never fail since it's a required argument.
     let input_path = matches.value_of("INPUT").unwrap();
 
-    let file_content = fs::read_to_string(input_path).unwrap();
+    // Attempt to read from the given input path.
+    let file_content = fs::read_to_string(input_path)
+        .map_err(|_| String::from("Failed to read file at the path provided"))?;
 
     let parse_start = time::Instant::now();
     let tree = tree::Node::from_file_content(&file_content);
@@ -34,4 +37,6 @@ fn main() {
 
     println!("{}\n", tree);
     println!(" * Input parsed to AST in {:?}\n", parse_span);
+
+    Ok(())
 }
