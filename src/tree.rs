@@ -12,17 +12,18 @@ pub enum Node {
 }
 
 impl Node {
-    /// Create a new node from a Literal rule.
-    fn from_literal(pair: Pair<Rule>) -> Self {
-        Node::Literal(String::from(pair.as_str()))
+    /// Create a new Literal node from a string.
+    fn new_literal(content: &str) -> Self {
+        Node::Literal(content.to_string())
     }
 
+    /// Create a new Attribute node with the given key and value.
     fn new_attribute(key: &str, value: &str) -> Self {
         Self::Attribute(key.to_string(), value.to_string())
     }
 
     /// Create a new node from an Element rule.
-    fn from_element(pair: Pair<Rule>) -> Self {
+    fn from_element_rule(pair: Pair<Rule>) -> Self {
         let mut name = String::new();
         let mut children: Vec<Node> = vec![];
 
@@ -42,8 +43,8 @@ impl Node {
                         children.push(Self::new_attribute(k, v));
                     }
                 }
-                Rule::Element => children.push(Self::from_element(p)),
-                Rule::Literal => children.push(Self::from_literal(p)),
+                Rule::Element => children.push(Self::from_element_rule(p)),
+                Rule::Literal => children.push(Self::new_literal(p.as_str())),
                 _ => (),
             }
         }
@@ -59,7 +60,7 @@ impl Node {
 
         let mut children: Vec<Node> = vec![];
         for p in pair.into_inner() {
-            children.push(Self::from_element(p));
+            children.push(Self::from_element_rule(p));
         }
 
         Node::Root(children)
