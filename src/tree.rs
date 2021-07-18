@@ -1,6 +1,6 @@
 use core::fmt::{self, Write};
 
-use crate::parser::{LlmlParser, Rule};
+use crate::parser::{LlmlParser as Parser, Rule};
 use pest::iterators::Pair;
 
 type ChildNodes = Vec<Node>;
@@ -99,7 +99,7 @@ impl Node {
 
     /// Create a node tree from LLML input.
     pub fn from_file_content(content: &str) -> Result<Self, String> {
-        let parsed_file = LlmlParser::parse_file_content(content)?;
+        let parsed_file = Parser::parse_file_content(content)?;
         Self::from_parsed_file(parsed_file)
     }
 }
