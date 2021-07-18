@@ -9,6 +9,7 @@ pub enum Node {
     Element(String, ChildNodes),
     Attribute(String, String),
     Literal(String),
+    Null,
 }
 
 impl Node {
@@ -17,9 +18,29 @@ impl Node {
         Node::Literal(content.to_string())
     }
 
+    /// Create a new Literal node from a Literal rule.
+    fn from_literal_rule(pair: Pair<Rule>) -> Self {
+        Self::new_literal(pair.as_str())
+    }
+
     /// Create a new Attribute node with the given key and value.
     fn new_attribute(key: &str, value: &str) -> Self {
         Self::Attribute(key.to_string(), value.to_string())
+    }
+
+    /// Create a new Attribute node from an Attribute rule.
+    fn from_attribute_rule(pair: Pair<Rule>) -> Self {
+        let mut ar = pair.into_inner();
+        let key = ar.next().unwrap().as_str();
+        let value = ar.next().unwrap().as_str();
+
+        Self::new_attribute(key, value)
+    }
+
+    /// Create a new Attribute node from an ElementClass rule.
+    fn from_element_class_rule(pair: Pair<Rule>) -> Self {
+        let name = pair.as_str().replace(".", "");
+        Self::new_attribute("class", &name)
     }
 
     /// Create a new node from an Element rule.
@@ -28,24 +49,21 @@ impl Node {
         let mut children: Vec<Node> = vec![];
 
         for p in pair.into_inner() {
-            match p.as_rule() {
-                Rule::ElementName => name = p.as_str().to_string(),
-                Rule::ElementClass => {
-                    let class_name = p.as_str().replace(".", "");
-                    children.push(Self::new_attribute("class", &class_name));
+            let el = match p.as_rule() {
+                Rule::ElementName => {
+                    name = p.as_str().to_string();
+                    Self::Null
                 }
-                Rule::AttributeList => {
-                    for i in p.into_inner() {
-                        let mut a = i.into_inner();
-                        let k = a.next().unwrap().as_str();
-                        let v = a.next().unwrap().as_str();
+                Rule::ElementClass => Self::from_element_class_rule(p),
+                Rule::Attribute => Self::from_attribute_rule(p),
+                Rule::Element => Self::from_element_rule(p),
+                Rule::Literal => Self::from_literal_rule(p),
+                _ => unreachable!(),
+            };
 
-                        children.push(Self::new_attribute(k, v));
-                    }
-                }
-                Rule::Element => children.push(Self::from_element_rule(p)),
-                Rule::Literal => children.push(Self::new_literal(p.as_str())),
-                _ => (),
+            match el {
+                Self::Null => (),
+                _ => children.push(el),
             }
         }
 
@@ -95,6 +113,7 @@ impl Node {
             Self::Literal(s) => {
                 println!("{}Literal<{:?}>", " ".repeat(level * 2), s);
             }
+            Self::Null => println!("{}Null<>", " ".repeat(level * 2)),
         }
     }
 }

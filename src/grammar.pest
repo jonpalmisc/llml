@@ -19,7 +19,7 @@ Literal = @{ (!SpecialChar ~ ANY)+ }
 AttributeKey = { Alphanumeric+ }
 AttributeValue = { (!DoubleQuote ~ ANY)* }
 Attribute = ${ AttributeKey ~ "=" ~ DoubleQuote ~ AttributeValue ~ DoubleQuote }
-AttributeList = { OpenBracket ~ Attribute+ ~ CloseBracket }
+AttributeList = _{ OpenBracket ~ Attribute+ ~ CloseBracket }
 
 ElementName = { Alphanumeric+ }
 ElementClass = @{ "." ~ (Alphanumeric | "-" | "_")+ }
