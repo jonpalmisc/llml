@@ -6,7 +6,7 @@ mod parser;
 mod tree;
 
 use clap::{App, Arg};
-use std::fs;
+use std::{fs, time};
 
 fn main() {
     let matches = App::new("LLML")
@@ -42,7 +42,11 @@ fn main() {
     let input_path = matches.value_of("INPUT").unwrap();
 
     let file_content = fs::read_to_string(input_path).unwrap();
-    let tree = tree::Node::from_file_content(&file_content);
 
-    println!("{}", tree);
+    let parse_start = time::Instant::now();
+    let tree = tree::Node::from_file_content(&file_content);
+    let parse_span = parse_start.elapsed();
+
+    println!("{}\n", tree);
+    println!(" * Input parsed to AST in {:?}\n", parse_span);
 }
