@@ -80,7 +80,18 @@ impl Node {
 
         let mut children: Vec<Node> = vec![];
         for p in pair.into_inner() {
-            children.push(Self::from_element_rule(p));
+            let e = Self::from_element_rule(p);
+            match e {
+                Self::Null => continue,
+                Self::Element(ref n, _) => {
+                    if n.is_empty() {
+                        continue;
+                    }
+                }
+                _ => (),
+            }
+
+            children.push(e);
         }
 
         Node::Root(children)
