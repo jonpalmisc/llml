@@ -55,7 +55,7 @@ fn run() -> Result<(), String> {
         println!("-->");
     }
 
-    println!("{}", html::from_ast(tree));
+    println!("{}", html::serialize_node(tree)?);
 
     // Print performance info if requested.
     if matches.is_present("profile") {
