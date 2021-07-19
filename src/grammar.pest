@@ -1,6 +1,7 @@
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 
 Backslash = _{ "\\" }
+Pipe = _{ "|" }
 OpenBrace = _{ "{" }
 CloseBrace = _{ "}" }
 OpenBracket = _{ "[" }
@@ -8,6 +9,7 @@ CloseBracket = _{ "]" }
 DoubleQuote = _{ "\"" }
 
 SpecialChar = _{(
+  Pipe |
   Backslash |
   OpenBrace |
   CloseBrace
@@ -16,6 +18,14 @@ SpecialChar = _{(
 Alphanumeric = _{ ASCII_ALPHANUMERIC }
 Literal = @{ (!SpecialChar ~ ANY)+ }
 
+MacroName = { Alphanumeric+ }
+MacroArgument = { OpenBrace ~ Literal ~ CloseBrace }
+MacroCall = {
+  Pipe ~
+  MacroName ~
+  MacroArgument+
+}
+
 AttributeKey = { Alphanumeric+ }
 AttributeValue = { (!DoubleQuote ~ ANY)* }
 Attribute = ${ AttributeKey ~ "=" ~ DoubleQuote ~ AttributeValue ~ DoubleQuote }
@@ -23,7 +33,7 @@ AttributeList = _{ OpenBracket ~ Attribute+ ~ CloseBracket }
 
 ElementName = { Alphanumeric+ }
 ElementClass = @{ "." ~ (Alphanumeric | "-" | "_")+ }
-ElementContent = _{ (Literal | Element)+ }
+ElementContent = _{ (Literal | Element | MacroCall)+ }
 Element = {
   Backslash ~
   ElementName ~

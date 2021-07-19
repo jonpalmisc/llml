@@ -69,6 +69,7 @@ pub fn serialize_node(node: Node) -> Result<String, String> {
             Node::Literal(l) => {
                 tag.append_content(&l);
             }
+            Node::MacroCall(..) => tag.append_content("MACRO_CALL"),
             _ => unreachable!(),
         }
     }
