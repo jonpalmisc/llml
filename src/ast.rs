@@ -75,13 +75,14 @@ impl Node {
     /// Create a node from a MacroCall rule.
     fn from_macro_call_rule(pair: Pair<Rule>) -> Self {
         let mut name = String::new();
-        let args: Vec<Node> = vec![];
+        let mut args: Vec<Node> = vec![];
 
         for p in pair.into_inner() {
             match p.as_rule() {
                 Rule::MacroName => {
                     name = p.as_str().to_string();
                 }
+                Rule::Literal => args.push(Self::from_literal_rule(p)),
                 _ => (),
             }
         }

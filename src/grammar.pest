@@ -19,7 +19,7 @@ Alphanumeric = _{ ASCII_ALPHANUMERIC }
 Literal = @{ (!SpecialChar ~ ANY)+ }
 
 MacroName = { Alphanumeric+ }
-MacroArgument = { OpenBrace ~ Literal ~ CloseBrace }
+MacroArgument = _{ OpenBrace ~ Literal ~ CloseBrace }
 MacroCall = {
   Pipe ~
   MacroName ~
