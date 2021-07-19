@@ -3,12 +3,10 @@ use core::fmt::{self, Write};
 use crate::parser::{LlmlParser as Parser, Rule};
 use pest::iterators::Pair;
 
-type ChildNodes = Vec<Node>;
-
-// AST nodes don't map 1:1 to DOM elements - but some nodes do.
+/// A syntax tree node.
 pub enum Node {
-    Root(ChildNodes),
-    Element(String, ChildNodes),
+    Root(Vec<Node>),
+    Element(String, Vec<Node>),
     Attribute(String, String),
     Literal(String),
     Null,
