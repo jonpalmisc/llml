@@ -1,3 +1,5 @@
 \h1.bold.center[id="title"]{Welcome to LLML!}
 
-\p[id="first"]{This is a \em{very} basic example showcasing LLML's syntax.}
+\p[id="first"]{This is a \em{very} basic example of \strong{LLML}'s syntax. It
+also serves as a test case for whitespace handling involving nested elements and
+line breaks.}

@@ -1,4 +1,4 @@
-WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+WHITESPACE = _{ "\r" | "\n" }
 
 Backslash = _{ "\\" }
 Pipe = _{ "|" }
@@ -33,7 +33,7 @@ AttributeList = _{ OpenBracket ~ Attribute+ ~ CloseBracket }
 
 ElementName = { Alphanumeric+ }
 ElementClass = @{ "." ~ (Alphanumeric | "-" | "_")+ }
-ElementContent = _{ (Literal | Element | MacroCall)+ }
+ElementContent = _{ (Literal | Element | MacroCall)* }
 Element = {
   Backslash ~
   ElementName ~
