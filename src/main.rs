@@ -3,6 +3,7 @@ extern crate pest_derive;
 extern crate pest;
 
 mod ast;
+mod html;
 mod parser;
 
 use clap::{App, AppSettings, Arg};
@@ -49,12 +50,18 @@ fn run() -> Result<(), String> {
 
     // Print the AST if requested.
     if matches.is_present("tree") {
-        println!("{}", tree);
+        println!("<!--");
+        println!("{}", format!("  {}", tree).replace("\n", "\n  "));
+        println!("-->");
     }
+
+    println!("{}", html::from_ast(tree));
 
     // Print performance info if requested.
     if matches.is_present("profile") {
-        println!("\n * Input parsed to AST in {:?}", parse_span);
+        println!("<!--");
+        println!("  * Input parsed to AST in {:?}", parse_span);
+        println!("-->");
     }
 
     Ok(())
