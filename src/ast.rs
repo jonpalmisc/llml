@@ -17,7 +17,7 @@ pub enum Node {
 impl Node {
     /// Create a new Literal node from a string.
     fn new_literal(content: &str) -> Self {
-        Node::Literal(content.to_string())
+        Node::Literal(content.replace("\n", " "))
     }
 
     /// Create a new Literal node from a Literal rule.
