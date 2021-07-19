@@ -44,4 +44,4 @@ Element = {
   CloseBrace
 }
 
-File = { SOI ~ Element+ ~ EOI }
+File = { SOI ~ (MacroCall | Element)+ ~ EOI }
