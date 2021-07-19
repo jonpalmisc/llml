@@ -3,6 +3,7 @@ extern crate pest_derive;
 extern crate pest;
 
 mod ast;
+mod eval;
 mod html;
 mod parser;
 
@@ -45,22 +46,39 @@ fn run() -> Result<(), String> {
         .map_err(|_| String::from("Failed to read file at the path provided"))?;
 
     let parse_start = time::Instant::now();
-    let tree = ast::Node::from_file_content(&file_content)?;
+    let mut tree = ast::Node::from_file_content(&file_content)?;
     let parse_span = parse_start.elapsed();
 
     // Print the AST if requested.
     if matches.is_present("tree") {
-        println!("<!--");
+        println!("<!-- Parsed tree");
         println!("{}", format!("  {}", tree).replace("\n", "\n  "));
         println!("-->");
     }
 
+    // Evaluate the raw AST.
+    let eval_start = time::Instant::now();
+    let context = eval::Context::new();
+    context.eval(&mut tree);
+    let eval_span = eval_start.elapsed();
+
+    // Print the evaluated AST if requested.
+    if matches.is_present("tree") {
+        println!("<!-- Evaluated tree");
+        println!("{}", format!("  {}", tree).replace("\n", "\n  "));
+        println!("-->");
+    }
+
+    let serialize_start = time::Instant::now();
     println!("{}", html::serialize_node(tree)?);
+    let serialize_span = serialize_start.elapsed();
 
     // Print performance info if requested.
     if matches.is_present("profile") {
-        println!("<!--");
-        println!("  * Input parsed to AST in {:?}", parse_span);
+        println!("<!-- Performance stats");
+        println!(" * Input parsed to AST in {:?}", parse_span);
+        println!(" * Macros evaluated in {:?}", eval_span);
+        println!(" * AST serialized to HTML in {:?}", serialize_span);
         println!("-->");
     }
 
