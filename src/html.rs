@@ -38,7 +38,7 @@ impl Tag {
 
 impl fmt::Display for Tag {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "<{}{}>{}</{}>", self.name, "", self.content, self.name)
+        write!(f, "<{}>{}</{}>", self.name, self.content, self.name)
     }
 }
 
