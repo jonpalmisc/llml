@@ -3,36 +3,29 @@ use crate::ast::Node;
 use std::collections::HashMap;
 
 // Global TODO:
-//  - Handlers should take a vector of string arguments rather than a node
 //  - Define macros/helpers for argument checking
-//  - Remove "should replace" tuple member (just return Node)
 //  - Rename "use" macro to "sub"
-//  - Add proper error handling to eval()
 //  - So much more
 
-type MacroHandler = fn(&mut Context, &Node) -> Node;
+type MacroArgs = [Node];
+type MacroHandler = fn(&mut Context, &MacroArgs) -> Node;
 
-fn macro_def(context: &mut Context, node: &Node) -> Node {
-    if let Node::MacroCall(_, args) = node {
-        if let Node::Literal(k) = &args[0] {
-            if let Node::Literal(v) = &args[1] {
-                context.vars.insert(k.to_string(), v.to_string());
-            }
+fn macro_def(context: &mut Context, args: &MacroArgs) -> Node {
+    if let Node::Literal(k) = &args[0] {
+        if let Node::Literal(v) = &args[1] {
+            context.vars.insert(k.to_string(), v.to_string());
         }
     }
 
     Node::Null
 }
 
-fn macro_use(context: &mut Context, node: &Node) -> Node {
+fn macro_use(context: &mut Context, args: &MacroArgs) -> Node {
     let mut value = String::from("???");
 
-    if let Node::MacroCall(_, args) = node {
-        if let Node::Literal(k) = &args[0] {
-            value = match context.vars.get(k) {
-                Some(s) => s.to_string(),
-                None => "???".to_string(),
-            };
+    if let Node::Literal(k) = &args[0] {
+        if let Some(s) = context.vars.get(k) {
+            value = s.to_string()
         }
     }
 
@@ -67,13 +60,9 @@ impl Context {
     }
 
     /// Evaluate a MacroCall node and get the result.
-    fn call(&mut self, node: &mut Node) -> Result<Node, String> {
-        if let Node::MacroCall(name, _) = node {
-            let handler = self.find_macro(&name)?;
-            Ok(handler(self, node))
-        } else {
-            Err("Tried to call non-macro node".to_string())
-        }
+    fn call(&mut self, name: &str, args: &MacroArgs) -> Result<Node, String> {
+        let handler = self.find_macro(name)?;
+        Ok(handler(self, args))
     }
 
     /// Evaluate the given node under the current context.
@@ -84,8 +73,8 @@ impl Context {
                     self.eval(d)?;
                 }
             }
-            Node::MacroCall(..) => {
-                *node = self.call(node)?;
+            Node::MacroCall(ref n, ref a) => {
+                *node = self.call(n, a)?;
             }
             _ => (),
         }
