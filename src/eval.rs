@@ -10,10 +10,9 @@ use std::collections::HashMap;
 //  - Add proper error handling to eval()
 //  - So much more
 
-type MacroHandler = fn(&mut Context, &Node) -> (bool, Node);
-type EvalResult = (bool, Node);
+type MacroHandler = fn(&mut Context, &Node) -> Node;
 
-fn macro_def(context: &mut Context, node: &Node) -> EvalResult {
+fn macro_def(context: &mut Context, node: &Node) -> Node {
     if let Node::MacroCall(_, args) = node {
         if let Node::Literal(k) = &args[0] {
             if let Node::Literal(v) = &args[1] {
@@ -22,10 +21,10 @@ fn macro_def(context: &mut Context, node: &Node) -> EvalResult {
         }
     }
 
-    (true, Node::Null)
+    Node::Null
 }
 
-fn macro_use(context: &mut Context, node: &Node) -> EvalResult {
+fn macro_use(context: &mut Context, node: &Node) -> Node {
     let mut value = String::from("???");
 
     if let Node::MacroCall(_, args) = node {
@@ -37,7 +36,7 @@ fn macro_use(context: &mut Context, node: &Node) -> EvalResult {
         }
     }
 
-    (true, Node::Literal(value))
+    Node::Literal(value)
 }
 
 /// An evaluation context.
@@ -47,6 +46,12 @@ pub struct Context {
 }
 
 impl Context {
+    fn find_macro(&self, name: &str) -> Result<&MacroHandler, String> {
+        self.macros
+            .get(name)
+            .ok_or(format!("Cannot call unregistered macro '{}'", name))
+    }
+
     /// Create a new empty evaluation context.
     pub fn new() -> Self {
         Context {
@@ -61,35 +66,30 @@ impl Context {
         self.macros.insert("use".to_string(), macro_use);
     }
 
-    fn call(&mut self, node: &mut Node) -> Result<EvalResult, String> {
+    /// Evaluate a MacroCall node and get the result.
+    fn call(&mut self, node: &mut Node) -> Result<Node, String> {
         if let Node::MacroCall(name, _) = node {
-            if !self.macros.contains_key(name) {
-                return Err(format!("Attempted to call unregistered macro '{}'", name));
-            }
-
-            let handler = self.macros.get(name).unwrap();
-
+            let handler = self.find_macro(&name)?;
             Ok(handler(self, node))
         } else {
-            return Err("Tried to call non-macro node".to_string());
+            Err("Tried to call non-macro node".to_string())
         }
     }
 
     /// Evaluate the given node under the current context.
-    pub fn eval(&mut self, node: &mut Node) {
+    pub fn eval(&mut self, node: &mut Node) -> Result<(), String> {
         match node {
             Node::Root(c) | Node::Element(_, c) => {
                 for d in c {
-                    self.eval(d);
+                    self.eval(d)?;
                 }
             }
             Node::MacroCall(..) => {
-                let result = self.call(node).unwrap();
-                if result.0 {
-                    *node = result.1;
-                }
+                *node = self.call(node)?;
             }
             _ => (),
         }
+
+        Ok(())
     }
 }
