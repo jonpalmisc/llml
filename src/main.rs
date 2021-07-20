@@ -58,7 +58,8 @@ fn run() -> Result<(), String> {
 
     // Evaluate the raw AST.
     let eval_start = time::Instant::now();
-    let context = eval::Context::new();
+    let mut context = eval::Context::new();
+    context.register_defaults();
     context.eval(&mut tree);
     let eval_span = eval_start.elapsed();
 
