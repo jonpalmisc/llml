@@ -55,6 +55,7 @@ pub fn serialize_node(node: Node) -> Result<String, String> {
             tag.set_name(&n);
             c
         }
+        Node::Null => return Ok("".to_string()),
         _ => unreachable!(),
     };
 
@@ -70,6 +71,7 @@ pub fn serialize_node(node: Node) -> Result<String, String> {
                 tag.append_content(&l);
             }
             Node::MacroCall(..) => tag.append_content("MACRO_CALL"),
+            Node::Null => (),
             _ => unreachable!(),
         }
     }
