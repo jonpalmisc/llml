@@ -1,6 +1,6 @@
-|def{name}{LLML}
-|def{feature}{macros}
+%def{name}{LLML}
+%def{feature}{macros}
 
 \h1.center[id="title"]{Welcome to LLML!}
 
-\p{This is a basic example showing the syntax of |sub{name}'s |sub{feature}.}
+\p{This is a basic example showing the syntax of %sub{name}'s %sub{feature}.}
