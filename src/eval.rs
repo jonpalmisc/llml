@@ -78,12 +78,7 @@ impl Context {
     /// Evaluate the given node under the current context.
     pub fn eval(&mut self, node: &mut Node) {
         match node {
-            Node::Root(s) => {
-                for t in s {
-                    self.eval(t)
-                }
-            }
-            Node::Element(n, c) => {
+            Node::Root(c) | Node::Element(_, c) => {
                 for d in c {
                     self.eval(d);
                 }
