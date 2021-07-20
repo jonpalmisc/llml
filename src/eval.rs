@@ -2,14 +2,10 @@ use crate::ast::Node;
 
 use std::collections::HashMap;
 
-// Global TODO:
-//  - Define macros/helpers for argument checking
-//  - Rename "use" macro to "sub"
-//  - So much more
-
 type MacroArgs = [Node];
 type MacroHandler = fn(&mut Context, &MacroArgs) -> Node;
 
+/// Macro to define a new variable.
 fn macro_def(context: &mut Context, args: &MacroArgs) -> Node {
     if let Node::Literal(k) = &args[0] {
         if let Node::Literal(v) = &args[1] {
@@ -20,7 +16,8 @@ fn macro_def(context: &mut Context, args: &MacroArgs) -> Node {
     Node::Null
 }
 
-fn macro_use(context: &mut Context, args: &MacroArgs) -> Node {
+/// Macro to insert a variable's content.
+fn macro_sub(context: &mut Context, args: &MacroArgs) -> Node {
     let mut value = String::from("???");
 
     if let Node::Literal(k) = &args[0] {
@@ -56,7 +53,7 @@ impl Context {
     /// Register the default macros for this context.
     pub fn register_defaults(&mut self) {
         self.macros.insert("def".to_string(), macro_def);
-        self.macros.insert("use".to_string(), macro_use);
+        self.macros.insert("sub".to_string(), macro_sub);
     }
 
     /// Evaluate a MacroCall node and get the result.
