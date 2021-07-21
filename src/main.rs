@@ -40,6 +40,9 @@ fn run() -> Result<(), String> {
 
     // This unwrap() should never fail since it's a required argument.
     let input_path = matches.value_of("INPUT").unwrap();
+    if !input_path.ends_with(".llml") {
+        return Err("Input files must have the .llml extension".to_string());
+    }
 
     // Attempt to read from the given input path.
     let file_content = fs::read_to_string(input_path)
