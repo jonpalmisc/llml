@@ -55,7 +55,7 @@ fn run() -> Result<(), String> {
 
     // Attempt to read from the given input path.
     let file_content = fs::read_to_string(input_path)
-        .map_err(|_| String::from("Failed to read file at the path provided"))?;
+        .map_err(|_| format!("Failed to read input file '{}'", input_path))?;
 
     let parse_start = time::Instant::now();
     let mut tree = ast::Node::from_file_content(&file_content)?;
@@ -81,7 +81,7 @@ fn run() -> Result<(), String> {
     }
 
     let serialize_start = time::Instant::now();
-    let html = format!("{}", html::serialize_node(tree)?);
+    let html = html::serialize_node(tree)?;
     let serialize_span = serialize_start.elapsed();
 
     // Print performance info if requested.
@@ -97,8 +97,13 @@ fn run() -> Result<(), String> {
         Some(p) => p.to_string(),
         None => input_path.replace(".llml", ".html"),
     };
-    let mut output_file = File::create(output_path).unwrap();
-    output_file.write_all(html.as_bytes());
+
+    // Create and write the output file.
+    let mut output_file = File::create(output_path.clone())
+        .map_err(|_| format!("Failed to create output file '{}'", output_path))?;
+    output_file
+        .write_all(html.as_bytes())
+        .map_err(|_| format!("Failed to write output file '{}'", output_path))?;
 
     Ok(())
 }
