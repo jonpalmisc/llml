@@ -11,6 +11,7 @@ pub enum Node {
     Element(String, Vec<Node>),
     Attribute(String, String),
     Literal(String),
+    Consumed(String),
     Null,
 }
 
@@ -145,7 +146,8 @@ impl fmt::Display for Node {
         use self::Node::*;
 
         match self {
-            Null => write!(f, "Null<>"),
+            Null => write!(f, "Null,"),
+            Consumed(e) => write!(f, "Consumed<{}>,", e),
             Literal(s) => write!(f, "Literal[{:?}],", s),
             Attribute(k, v) => write!(f, "Attribute[{}={:?}],", k, v),
             Element(n, c) => {

@@ -9,6 +9,7 @@ type MacroHandler = fn(&mut Context, &MacroArgs) -> Node;
 fn macro_def(context: &mut Context, args: &MacroArgs) -> Node {
     if let Node::Literal(k) = &args[0] {
         context.vars.insert(k.to_string(), args[1].clone());
+        return Node::Consumed(k.to_string());
     }
 
     Node::Null
@@ -16,12 +17,11 @@ fn macro_def(context: &mut Context, args: &MacroArgs) -> Node {
 
 /// Macro to insert a variable's content.
 fn macro_sub(context: &mut Context, args: &MacroArgs) -> Node {
-
     if let Node::Literal(k) = &args[0] {
         return match context.vars.get(k) {
             Some(n) => n.clone(),
-            None => Node::Null
-        }
+            None => Node::Null,
+        };
     }
 
     Node::Null
