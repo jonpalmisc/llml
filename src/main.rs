@@ -36,6 +36,13 @@ fn run() -> Result<(), String> {
                 .long("profile")
                 .help("Display performance info upon exit"),
         )
+        .arg(
+            Arg::with_name("output")
+                .short("o")
+                .long("output")
+                .takes_value(true)
+                .help("Where to write the HTML output"),
+        )
         .help_message("Show this help information")
         .version_message("Print the program version")
         .get_matches();
@@ -85,8 +92,11 @@ fn run() -> Result<(), String> {
         println!("  * AST serialized to HTML in {:?}", serialize_span);
     }
 
-    // Write the resulting HTML to an adjacent file.
-    let output_path = input_path.replace(".llml", ".html");
+    // Write the resulting HTML.
+    let output_path = match matches.value_of("output") {
+        Some(p) => p.to_string(),
+        None => input_path.replace(".llml", ".html"),
+    };
     let mut output_file = File::create(output_path).unwrap();
     output_file.write_all(html.as_bytes());
 
