@@ -56,9 +56,8 @@ fn run() -> Result<(), String> {
 
     // Print the AST if requested.
     if matches.is_present("tree") {
-        println!("<!-- Parsed tree");
-        println!("{}", format!("  {}", tree).replace("\n", "\n  "));
-        println!("-->");
+        println!("Parsed syntax tree:\n");
+        println!("{}\n", format!("  {}", tree).replace("\n", "\n  "));
     }
 
     // Evaluate the raw AST.
@@ -70,9 +69,8 @@ fn run() -> Result<(), String> {
 
     // Print the evaluated AST if requested.
     if matches.is_present("tree") {
-        println!("<!-- Evaluated tree");
-        println!("{}", format!("  {}", tree).replace("\n", "\n  "));
-        println!("-->");
+        println!("Evaluated syntax tree:\n");
+        println!("{}\n", format!("  {}", tree).replace("\n", "\n  "));
     }
 
     let serialize_start = time::Instant::now();
@@ -81,11 +79,10 @@ fn run() -> Result<(), String> {
 
     // Print performance info if requested.
     if matches.is_present("profile") {
-        println!("<!-- Performance stats");
-        println!(" * Input parsed to AST in {:?}", parse_span);
-        println!(" * Macros evaluated in {:?}", eval_span);
-        println!(" * AST serialized to HTML in {:?}", serialize_span);
-        println!("-->");
+        println!("Performance info:\n");
+        println!("  * Input parsed to AST in {:?}", parse_span);
+        println!("  * Macros evaluated in {:?}", eval_span);
+        println!("  * AST serialized to HTML in {:?}", serialize_span);
     }
 
     // Write the resulting HTML to an adjacent file.
