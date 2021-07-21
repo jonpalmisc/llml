@@ -4,6 +4,7 @@ use crate::parser::{LlmlParser as Parser, Rule};
 use pest::iterators::Pair;
 
 /// A syntax tree node.
+#[derive(Clone)]
 pub enum Node {
     Root(Vec<Node>),
     MacroCall(String, Vec<Node>),
