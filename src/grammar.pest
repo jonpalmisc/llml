@@ -7,6 +7,7 @@ CloseBrace = _{ "}" }
 OpenBracket = _{ "[" }
 CloseBracket = _{ "]" }
 DoubleQuote = _{ "\"" }
+Space = _{ " "* }
 
 SpecialChar = _{(
   Percent |
@@ -18,8 +19,11 @@ SpecialChar = _{(
 Alphanumeric = _{ ASCII_ALPHANUMERIC }
 Literal = @{ (!SpecialChar ~ ANY)+ }
 
+OpenSeq = _{ OpenBrace ~ Space }
+CloseSeq = _{ Space ~ CloseBrace }
+
 MacroName = { Alphanumeric+ }
-MacroArgument = _{ OpenBrace ~ Literal ~ CloseBrace }
+MacroArgument = _{ OpenSeq ~ (Literal | Element) ~ CloseSeq }
 MacroCall = {
   Percent ~
   MacroName ~
@@ -29,7 +33,7 @@ MacroCall = {
 AttributeKey = { Alphanumeric+ }
 AttributeValue = { (!DoubleQuote ~ ANY)* }
 Attribute = ${ AttributeKey ~ "=" ~ DoubleQuote ~ AttributeValue ~ DoubleQuote }
-AttributeList = _{ OpenBracket ~ Attribute+ ~ CloseBracket }
+AttributeList = _{ OpenBracket ~ (Attribute ~ Space)+ ~ CloseBracket }
 
 ElementName = { Alphanumeric+ }
 ElementClass = @{ "." ~ (Alphanumeric | "-" | "_")+ }
@@ -39,9 +43,9 @@ Element = {
   ElementName ~
   ElementClass* ~
   AttributeList? ~
-  OpenBrace ~
+  OpenSeq ~
   ElementContent ~
-  CloseBrace
+  CloseSeq
 }
 
 File = { SOI ~ (MacroCall | Element)+ ~ EOI }

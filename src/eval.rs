@@ -8,9 +8,7 @@ type MacroHandler = fn(&mut Context, &MacroArgs) -> Node;
 /// Macro to define a new variable.
 fn macro_def(context: &mut Context, args: &MacroArgs) -> Node {
     if let Node::Literal(k) = &args[0] {
-        if let Node::Literal(v) = &args[1] {
-            context.vars.insert(k.to_string(), v.to_string());
-        }
+        context.vars.insert(k.to_string(), args[1].clone());
     }
 
     Node::Null
@@ -18,20 +16,20 @@ fn macro_def(context: &mut Context, args: &MacroArgs) -> Node {
 
 /// Macro to insert a variable's content.
 fn macro_sub(context: &mut Context, args: &MacroArgs) -> Node {
-    let mut value = String::from("???");
 
     if let Node::Literal(k) = &args[0] {
-        if let Some(s) = context.vars.get(k) {
-            value = s.to_string()
+        return match context.vars.get(k) {
+            Some(n) => n.clone(),
+            None => Node::Null
         }
     }
 
-    Node::Literal(value)
+    Node::Null
 }
 
 /// An evaluation context.
 pub struct Context {
-    pub vars: HashMap<String, String>,
+    pub vars: HashMap<String, Node>,
     pub macros: HashMap<String, MacroHandler>,
 }
 
