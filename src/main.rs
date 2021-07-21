@@ -8,6 +8,8 @@ mod html;
 mod parser;
 
 use clap::{App, AppSettings, Arg};
+use std::fs::File;
+use std::io::Write;
 use std::{fs, process, time};
 
 fn run() -> Result<(), String> {
@@ -74,7 +76,7 @@ fn run() -> Result<(), String> {
     }
 
     let serialize_start = time::Instant::now();
-    println!("{}", html::serialize_node(tree)?);
+    let html = format!("{}", html::serialize_node(tree)?);
     let serialize_span = serialize_start.elapsed();
 
     // Print performance info if requested.
@@ -85,6 +87,11 @@ fn run() -> Result<(), String> {
         println!(" * AST serialized to HTML in {:?}", serialize_span);
         println!("-->");
     }
+
+    // Write the resulting HTML to an adjacent file.
+    let output_path = input_path.replace(".llml", ".html");
+    let mut output_file = File::create(output_path).unwrap();
+    output_file.write_all(html.as_bytes());
 
     Ok(())
 }
