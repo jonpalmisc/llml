@@ -127,6 +127,14 @@ impl Node {
         let parsed_file = Parser::parse_file_content(content)?;
         Self::from_parsed_file(parsed_file)
     }
+
+    /// Get the node's value as a string. Only works with literals.
+    pub fn string_value(&self) -> Option<String> {
+        match self {
+            Node::Literal(l) => Some(l.to_string()),
+            _ => None,
+        }
+    }
 }
 
 /// Pretty-print a vector of AST nodes.

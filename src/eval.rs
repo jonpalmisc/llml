@@ -7,47 +7,40 @@ type MacroHandler = fn(&mut Context, &MacroArgs) -> Node;
 
 /// Built-in macro to define a new user macro.
 fn builtin_defmacro(context: &mut Context, args: &MacroArgs) -> Node {
-    if let Node::Literal(k) = &args[0] {
-        context.macros.insert(k.to_string(), args[2].clone());
-        return Node::Consumed(format!("defmacro/{}", k));
-    }
+    let name = args[0].string_value().unwrap();
+    let template = args[2].clone();
 
-    Node::Null
+    context.macros.insert(name.clone(), template);
+
+    Node::Consumed(format!("defmacro/{}", name))
 }
 
 /// Built-in macro to insert a macro argument.
 fn builtin_arg(context: &mut Context, args: &MacroArgs) -> Node {
     let macro_args = context.arg_stack.last().unwrap();
+    let index: usize = args[0].string_value().unwrap().parse().unwrap();
 
-    if let Node::Literal(n) = &args[0] {
-        let index: usize = n.parse().unwrap();
-
-        return macro_args[index - 1].clone();
-    }
-
-    Node::Literal("ERROR".to_string())
+    macro_args[index - 1].clone()
 }
 
 /// Built-in macro to define a new variable.
 fn builtin_def(context: &mut Context, args: &MacroArgs) -> Node {
-    if let Node::Literal(k) = &args[0] {
-        context.vars.insert(k.to_string(), args[1].clone());
-        return Node::Consumed(k.to_string());
-    }
+    let name = args[0].string_value().unwrap();
+    let value = args[1].clone();
 
-    Node::Null
+    context.vars.insert(name.clone(), value);
+
+    Node::Consumed(name)
 }
 
 /// Built-in macro to insert a variable's content.
 fn builtin_sub(context: &mut Context, args: &MacroArgs) -> Node {
-    if let Node::Literal(k) = &args[0] {
-        return match context.vars.get(k) {
-            Some(n) => n.clone(),
-            None => Node::Null,
-        };
-    }
+    let name = args[0].string_value().unwrap();
 
-    Node::Null
+    match context.vars.get(&name) {
+        Some(v) => v.clone(),
+        None => Node::Null,
+    }
 }
 
 /// An evaluation context.
@@ -81,7 +74,7 @@ impl Context {
     /// Evaluate a MacroCall node and get the result.
     fn call(&mut self, name: &str, args: &MacroArgs) -> Result<Node, String> {
         if let Some(builtin_handler) = self.find_builtin(name) {
-            return Ok(builtin_handler(self, args));
+            Ok(builtin_handler(self, args))
         } else if let Some(macro_template) = self.find_macro(name) {
             let mut working_copy = macro_template.clone();
 
@@ -89,9 +82,9 @@ impl Context {
             self.eval(&mut working_copy)?;
             self.arg_stack.pop();
 
-            return Ok(working_copy);
+            Ok(working_copy)
         } else {
-            return Err(format!("Tried to call undefined macro '{}'", name));
+            Err(format!("Tried to call undefined macro '{}'", name))
         }
     }
 
