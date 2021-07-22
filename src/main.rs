@@ -58,7 +58,7 @@ fn run() -> Result<(), String> {
         .map_err(|_| format!("Failed to read input file '{}'", input_path))?;
 
     let parse_start = time::Instant::now();
-    let mut tree = ast::Node::from_file_content(&file_content)?;
+    let mut tree = ast::Node::from_string(&file_content)?;
     let parse_span = parse_start.elapsed();
 
     // Print the AST if requested.
