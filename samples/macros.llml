@@ -1,6 +1,10 @@
 %def{name}{LLML}
 %def{feature}{macros}
 
-\h1.center[id="title"]{Welcome to LLML!}
+%def{title}{
+  \h1[class="test" id="title"]{
+    Welcome to LLML!}}
+
+%sub{title}
 
 \p{This is a basic example showing the syntax of %sub{name}'s %sub{feature}.}
