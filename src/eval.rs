@@ -30,12 +30,13 @@ fn macro_sub(context: &mut Context, args: &MacroArgs) -> Node {
 /// An evaluation context.
 pub struct Context {
     pub vars: HashMap<String, Node>,
-    pub macros: HashMap<String, MacroHandler>,
+    pub builtins: HashMap<String, MacroHandler>,
 }
 
 impl Context {
+    /// Find a macro by name, prioritizing built-in macros.
     fn find_macro(&self, name: &str) -> Result<&MacroHandler, String> {
-        self.macros
+        self.builtins
             .get(name)
             .ok_or(format!("Cannot call unregistered macro '{}'", name))
     }
@@ -44,14 +45,14 @@ impl Context {
     pub fn new() -> Self {
         Context {
             vars: HashMap::new(),
-            macros: HashMap::new(),
+            builtins: HashMap::new(),
         }
     }
 
     /// Register the default macros for this context.
     pub fn register_defaults(&mut self) {
-        self.macros.insert("def".to_string(), macro_def);
-        self.macros.insert("sub".to_string(), macro_sub);
+        self.builtins.insert("def".to_string(), macro_def);
+        self.builtins.insert("sub".to_string(), macro_sub);
     }
 
     /// Evaluate a MacroCall node and get the result.
