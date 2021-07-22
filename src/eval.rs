@@ -17,7 +17,15 @@ fn builtin_defmacro(context: &mut Context, args: &MacroArgs) -> Node {
 
 /// Built-in macro to insert a macro argument.
 fn builtin_arg(context: &mut Context, args: &MacroArgs) -> Node {
-    Node::Literal("ARG".to_string())
+    let macro_args = context.arg_stack.last().unwrap();
+
+    if let Node::Literal(n) = &args[0] {
+        let index: usize = n.parse().unwrap();
+
+        return macro_args[index - 1].clone();
+    }
+
+    Node::Literal("ERROR".to_string())
 }
 
 /// Built-in macro to define a new variable.
@@ -47,6 +55,7 @@ pub struct Context {
     pub builtins: HashMap<String, MacroHandler>,
     pub macros: HashMap<String, Node>,
     pub vars: HashMap<String, Node>,
+    pub arg_stack: Vec<Vec<Node>>,
 }
 
 impl Context {
@@ -56,6 +65,7 @@ impl Context {
             builtins: HashMap::new(),
             macros: HashMap::new(),
             vars: HashMap::new(),
+            arg_stack: Vec::new(),
         }
     }
 
@@ -74,7 +84,10 @@ impl Context {
             return Ok(builtin_handler(self, args));
         } else if let Some(macro_template) = self.find_macro(name) {
             let mut working_copy = macro_template.clone();
+
+            self.arg_stack.push(args.to_vec());
             self.eval(&mut working_copy)?;
+            self.arg_stack.pop();
 
             return Ok(working_copy);
         } else {
