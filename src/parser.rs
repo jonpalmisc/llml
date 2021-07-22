@@ -1,4 +1,11 @@
 use pest::{iterators::Pair, Parser};
+use regex::Regex;
+
+/// Clean up input before parsing. Currently just removes indentation.
+pub fn sanitize(content: &str) -> String {
+    let strip_indent = Regex::new(r#"\n\s+"#).unwrap();
+    strip_indent.replace_all(content, "\n").to_string()
+}
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]

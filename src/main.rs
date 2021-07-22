@@ -56,9 +56,10 @@ fn run() -> Result<(), String> {
     // Attempt to read from the given input path.
     let file_content = fs::read_to_string(input_path)
         .map_err(|_| format!("Failed to read input file '{}'", input_path))?;
+    let cleaned_input = parser::sanitize(&file_content);
 
     let parse_start = time::Instant::now();
-    let mut tree = ast::Node::from_string(&file_content)?;
+    let mut tree = ast::Node::from_string(&cleaned_input)?;
     let parse_span = parse_start.elapsed();
 
     // Print the AST if requested.
