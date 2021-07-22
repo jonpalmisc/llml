@@ -1,7 +1,7 @@
 WHITESPACE = _{ "\r" | "\n" }
 
 Backslash = _{ "\\" }
-Percent = _{ "%" }
+Exclamation = _{ "!" }
 OpenBrace = _{ "{" }
 CloseBrace = _{ "}" }
 OpenBracket = _{ "[" }
@@ -10,7 +10,6 @@ DoubleQuote = _{ "\"" }
 Space = _{ " "* }
 
 SpecialChar = _{(
-  Percent |
   Backslash |
   OpenBrace |
   CloseBrace
@@ -25,8 +24,9 @@ CloseSeq = _{ Space ~ CloseBrace }
 MacroName = { Alphanumeric+ }
 MacroArgument = _{ OpenSeq ~ (Literal | Element) ~ CloseSeq }
 MacroCall = {
-  Percent ~
+  Backslash ~
   MacroName ~
+  Exclamation ~
   MacroArgument+
 }
 

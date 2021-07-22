@@ -1,10 +1,10 @@
-%def{name}{LLML}
-%def{feature}{macros}
+\def!{name}{LLML}
+\def!{feature}{macros}
 
-%def{title}{
+\def!{title}{
   \h1[class="test" id="title"]{
     Welcome to LLML!}}
 
-%sub{title}
+\sub!{title}
 
-\p{This is a basic example showing the syntax of %sub{name}'s %sub{feature}.}
+\p{This is a basic example showing the syntax of \sub!{name}'s \sub!{feature}.}
