@@ -2,10 +2,8 @@
 \def!{feature}{macros}
 
 \defmacro!{section}{2}{
-  \div{
-    \h1.section-title{\arg!{1}}
-    \p.section-par{\arg!{2}}
-  }
+  \h1.section-title{\arg!{1}}
+  \p.section-par{\arg!{2}}
 }
 
 \section!{Welcome To LLML!}{This is a basic example showing the syntax of LLML's features.}
