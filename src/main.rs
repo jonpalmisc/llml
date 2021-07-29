@@ -92,11 +92,14 @@ fn run() -> Result<(), String> {
 
     // Print performance info if requested.
     if matches.is_present("profile") {
+        let total_span = parse_start.elapsed();
+
         println!("Performance info:\n");
-        println!("  * Input parsed to AST in {:?}", parse_span);
-        println!("  * Macros evaluated in {:?}", eval_span);
-        println!("  * Tree optimization took {:?}", simplify_span);
-        println!("  * AST serialized to HTML in {:?}", serialize_span);
+        println!(" * Input parsed to AST in {:?}", parse_span);
+        println!(" * Macros evaluated in {:?}", eval_span);
+        println!(" * Tree optimization took {:?}", simplify_span);
+        println!(" * AST serialized to HTML in {:?}", serialize_span);
+        println!("\n * Total runtime was {:?}\n", total_span);
     }
 
     // Write the resulting HTML.
