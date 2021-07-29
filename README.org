@@ -1,7 +1,17 @@
 * LLML: LaTeX-Like Markup Language
 
-LLML is a markup language with a LaTeX-like syntax written in Rust, intended to
-be transpiled to HTML. It is currently in very early development.
+LLML is a markup language & templating engine with a LaTeX-like syntax that
+transpiles to HTML. It is written in (not very good) Rust and is currently in
+very early development.
+
+** Installation
+
+LLML must be built from source at this time.
+
+** Usage
+
+LLML's usage is currently unstable; run LLML with no arguments or the =--help=
+flag for the most current usage information.
 
 ** License
 
