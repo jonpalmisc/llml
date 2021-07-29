@@ -17,7 +17,7 @@ fn run() -> Result<(), String> {
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::UnifiedHelpMessage)
         .version("0.1.0")
-        .author("Jon Palmisciano <jp@jonpalmisc.com")
+        .author("Jon Palmisciano <jp@jonpalmisc.com>")
         .arg(
             Arg::with_name("INPUT")
                 .help("Path to the LLML file to process")
