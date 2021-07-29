@@ -105,15 +105,25 @@ impl Context {
         Ok(())
     }
 
+    /// Quite possibly the least efficient function of all time.
     pub fn simplify(&mut self, node: &mut Node) -> Result<(), String> {
-        // TODO: Replace with proper unwrapping logic.
         match node {
-            Node::Root(c) | Node::Element(_, c) => {
-                for d in c {
-                    self.simplify(d)?;
+            Node::Root(c) | Node::Element(_, c) | Node::Wrapper(c) => {
+                let mut new_children = Vec::new();
+
+                for d in c.clone() {
+                    match d {
+                        Node::Wrapper(mut w) => new_children.append(&mut w),
+                        _ => new_children.push(d.clone()),
+                    }
                 }
+
+                for mut x in &mut new_children {
+                    self.simplify(&mut x)?;
+                }
+
+                *c = new_children;
             }
-            Node::Wrapper(..) => *node = Node::Null,
             _ => (),
         }
 
