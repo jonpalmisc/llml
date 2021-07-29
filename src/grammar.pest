@@ -21,8 +21,10 @@ Literal = @{ (!SpecialChar ~ ANY)+ }
 OpenSeq = _{ OpenBrace ~ Space }
 CloseSeq = _{ Space ~ CloseBrace }
 
+Wrapper = { ElementContent }
+
 MacroName = { Alphanumeric+ }
-MacroArgument = _{ OpenSeq ~ (Literal | Element) ~ CloseSeq }
+MacroArgument = _{ OpenSeq ~ Wrapper ~ CloseSeq }
 MacroCall = {
   Backslash ~
   MacroName ~

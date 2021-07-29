@@ -73,6 +73,7 @@ fn run() -> Result<(), String> {
     let mut context = eval::Context::new();
     context.register_defaults();
     context.eval(&mut tree)?;
+    context.simplify(&mut tree)?;
     let eval_span = eval_start.elapsed();
 
     // Print the evaluated AST if requested.

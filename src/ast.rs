@@ -9,6 +9,7 @@ pub enum Node {
     Root(Vec<Node>),
     MacroCall(String, Vec<Node>),
     Element(String, Vec<Node>),
+    Wrapper(Vec<Node>),
     Attribute(String, String),
     Literal(String),
     Consumed(String),
@@ -85,11 +86,23 @@ impl Node {
         Node::MacroCall(name, args)
     }
 
+    /// Create a node from a Wrapper rule.
+    fn from_wrapper_rule(pair: Pair<Rule>) -> Self {
+        let mut contents: Vec<Node> = vec![];
+
+        for p in pair.into_inner() {
+            contents.push(Self::from_primary_rule(p));
+        }
+
+        Node::Wrapper(contents)
+    }
+
     /// Create a new node from a rule. Must be a top-level rule.
     fn from_primary_rule(pair: Pair<Rule>) -> Self {
         match pair.as_rule() {
             Rule::Element => Self::from_element_rule(pair),
             Rule::MacroCall => Self::from_macro_call_rule(pair),
+            Rule::Wrapper => Self::from_wrapper_rule(pair),
             Rule::Literal => Self::from_literal_rule(pair),
             Rule::EOI => Self::Null,
             _ => unreachable!(),
@@ -132,6 +145,7 @@ impl Node {
     pub fn string_value(&self) -> Option<String> {
         match self {
             Node::Literal(l) => Some(l.to_string()),
+            Node::Wrapper(c) => c[0].string_value(),
             _ => None,
         }
     }
@@ -158,6 +172,11 @@ impl fmt::Display for Node {
             Consumed(e) => write!(f, "Consumed[{}],", e),
             Literal(s) => write!(f, "Literal[{:?}],", s),
             Attribute(k, v) => write!(f, "Attribute[{}={:?}],", k, v),
+            Wrapper(z) => {
+                writeln!(f, "Wrapper {{")?;
+                write_nodes(f, z)?;
+                write!(f, "}},")
+            }
             Element(n, c) => {
                 writeln!(f, "Element[{}] {{", n)?;
                 write_nodes(f, c)?;

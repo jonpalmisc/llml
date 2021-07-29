@@ -91,7 +91,7 @@ impl Context {
     /// Evaluate the given node under the current context.
     pub fn eval(&mut self, node: &mut Node) -> Result<(), String> {
         match node {
-            Node::Root(c) | Node::Element(_, c) => {
+            Node::Root(c) | Node::Element(_, c) | Node::Wrapper(c) => {
                 for d in c {
                     self.eval(d)?;
                 }
@@ -99,6 +99,21 @@ impl Context {
             Node::MacroCall(ref n, ref a) => {
                 *node = self.call(n, a)?;
             }
+            _ => (),
+        }
+
+        Ok(())
+    }
+
+    pub fn simplify(&mut self, node: &mut Node) -> Result<(), String> {
+        // TODO: Replace with proper unwrapping logic.
+        match node {
+            Node::Root(c) | Node::Element(_, c) => {
+                for d in c {
+                    self.simplify(d)?;
+                }
+            }
+            Node::Wrapper(..) => *node = Node::Null,
             _ => (),
         }
 
