@@ -3,8 +3,8 @@
 
 \defmacro!{section}{2}{
   \div{
-    \h1{\arg!{1}}
-    \p{\arg!{2}}
+    \h1.section-title{\arg!{1}}
+    \p.section-par{\arg!{2}}
   }
 }
 

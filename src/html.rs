@@ -34,11 +34,29 @@ impl Tag {
     pub fn append_content(&mut self, text: &str) {
         self.content.push_str(text);
     }
+
+    /// Serialize this tag's attributes.
+    pub fn serialized_attributes(&self) -> String {
+        let mut result = String::new();
+
+        for (k, v) in &self.attributes {
+            result.push_str(&format!(" {}=\"{}\"", k, v));
+        }
+
+        result
+    }
 }
 
 impl fmt::Display for Tag {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "<{}>{}</{}>", self.name, self.content, self.name)
+        write!(
+            f,
+            "<{}{}>{}</{}>",
+            self.name,
+            self.serialized_attributes(),
+            self.content,
+            self.name
+        )
     }
 }
 
