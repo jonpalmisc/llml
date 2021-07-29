@@ -73,8 +73,12 @@ fn run() -> Result<(), String> {
     let mut context = eval::Context::new();
     context.register_defaults();
     context.eval(&mut tree)?;
-    context.simplify(&mut tree)?;
     let eval_span = eval_start.elapsed();
+
+    // Simplify the evaluated AST.
+    let simplify_start = time::Instant::now();
+    context.simplify(&mut tree)?;
+    let simplify_span = simplify_start.elapsed();
 
     // Print the evaluated AST if requested.
     if matches.is_present("tree") {
@@ -91,6 +95,7 @@ fn run() -> Result<(), String> {
         println!("Performance info:\n");
         println!("  * Input parsed to AST in {:?}", parse_span);
         println!("  * Macros evaluated in {:?}", eval_span);
+        println!("  * Tree optimization took {:?}", simplify_span);
         println!("  * AST serialized to HTML in {:?}", serialize_span);
     }
 
