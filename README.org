@@ -4,14 +4,44 @@ LLML is a markup language & templating engine with a LaTeX-like syntax that
 transpiles to HTML. It is written in (not very good) Rust and is currently in
 very early development.
 
+** Example
+
+The following is a basic example of LLML:
+
+#+begin_src
+\defmacro!{section}{2}{
+  \h1.section-title{\arg!{1}}
+  \p.section-par{\arg!{2}}
+}
+
+\section!{Welcome To LLML!}{This is a basic example showing the syntax of LLML's features.}
+#+end_src
+
+As you can see, it looks like LaTeX but with HTML elements. It's a nightmare, I
+know.
+
 ** Installation
 
 LLML must be built from source at this time.
 
 ** Usage
 
-LLML's usage is currently unstable; run LLML with no arguments or the =--help=
-flag for the most current usage information.
+The most basic LLML usage is as follows:
+
+#+begin_src sh
+llml example.llml
+#+end_src
+
+This will transpile =example.llml= and write the output to =example.html=. Run
+LLML with no arguments or the =--help= flag for info on additional options.
+
+** FAQ
+
+Please see some frequently asked questions (and their answers) below.
+
+*** Why would you create this?
+
+It seemed like a good idea at the time. I'm sorry.
 
 ** License
 
