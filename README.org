@@ -2,7 +2,8 @@
 
 LLML is a markup language & templating engine with a LaTeX-like syntax that
 transpiles to HTML. It is written in (not very good) Rust and is currently in
-very early development.
+very early development. Everything about this project is unstable and should not
+be used in any serious context.
 
 ** Example
 
