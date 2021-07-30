@@ -20,7 +20,10 @@ fn builtin_arg(context: &mut Context, args: &MacroArgs) -> Node {
     let macro_args = context.arg_stack.last().unwrap();
     let index: usize = args[0].string_value().unwrap().parse().unwrap();
 
-    macro_args[index - 1].clone()
+    let mut arg_template = macro_args[index - 1].clone();
+    context.eval(&mut arg_template);
+
+    arg_template
 }
 
 /// Built-in macro to define a new variable.
@@ -80,6 +83,7 @@ impl Context {
 
             self.arg_stack.push(args.to_vec());
             self.eval(&mut working_copy)?;
+            self.simplify(&mut working_copy)?;
             self.arg_stack.pop();
 
             Ok(working_copy)
