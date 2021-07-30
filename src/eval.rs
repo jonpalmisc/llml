@@ -3,47 +3,47 @@ use crate::ast::Node;
 use std::collections::HashMap;
 
 type MacroArgs = [Node];
-type MacroHandler = fn(&mut Context, &MacroArgs) -> Node;
+type MacroHandler = fn(&mut Context, &MacroArgs) -> Result<Node, String>;
 
 /// Built-in macro to define a new user macro.
-fn builtin_defmacro(context: &mut Context, args: &MacroArgs) -> Node {
+fn builtin_defmacro(context: &mut Context, args: &MacroArgs) -> Result<Node, String> {
     let name = args[0].string_value().unwrap();
     let template = args[2].clone();
 
     context.macros.insert(name.clone(), template);
 
-    Node::Consumed(format!("defmacro/{}", name))
+    Ok(Node::Consumed(format!("defmacro/{}", name)))
 }
 
 /// Built-in macro to insert a macro argument.
-fn builtin_arg(context: &mut Context, args: &MacroArgs) -> Node {
+fn builtin_arg(context: &mut Context, args: &MacroArgs) -> Result<Node, String> {
     let macro_args = context.arg_stack.last().unwrap();
     let index: usize = args[0].string_value().unwrap().parse().unwrap();
 
-    let mut arg_template = macro_args[index - 1].clone();
-    context.eval(&mut arg_template);
+    let mut arg = macro_args[index - 1].clone();
+    context.eval(&mut arg)?;
 
-    arg_template
+    Ok(arg)
 }
 
 /// Built-in macro to define a new variable.
-fn builtin_def(context: &mut Context, args: &MacroArgs) -> Node {
+fn builtin_def(context: &mut Context, args: &MacroArgs) -> Result<Node, String> {
     let name = args[0].string_value().unwrap();
     let value = args[1].clone();
 
     context.vars.insert(name.clone(), value);
 
-    Node::Consumed(name)
+    Ok(Node::Consumed(name))
 }
 
 /// Built-in macro to insert a variable's content.
-fn builtin_sub(context: &mut Context, args: &MacroArgs) -> Node {
+fn builtin_sub(context: &mut Context, args: &MacroArgs) -> Result<Node, String> {
     let name = args[0].string_value().unwrap();
 
-    match context.vars.get(&name) {
+    Ok(match context.vars.get(&name) {
         Some(v) => v.clone(),
         None => Node::Null,
-    }
+    })
 }
 
 /// An evaluation context.
@@ -77,7 +77,7 @@ impl Context {
     /// Evaluate a MacroCall node and get the result.
     fn call(&mut self, name: &str, args: &MacroArgs) -> Result<Node, String> {
         if let Some(builtin_handler) = self.find_builtin(name) {
-            Ok(builtin_handler(self, args))
+            builtin_handler(self, args)
         } else if let Some(macro_template) = self.find_macro(name) {
             let mut working_copy = macro_template.clone();
 
