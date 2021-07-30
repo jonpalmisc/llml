@@ -19,7 +19,16 @@ The following is a basic example of LLML:
 #+end_src
 
 As you can see, it looks like LaTeX but with HTML elements. It's a nightmare, I
-know.
+know. When transpiled, the sample above turns into the following:
+
+#+begin_src html
+<html>
+  <h1 class="section-title">Welcome To LLML!</h1>
+  <p class="section-par">
+    This is a basic example showing the syntax of LLML's features.
+  </p>
+</html>
+#+end_src
 
 ** Installation
 
